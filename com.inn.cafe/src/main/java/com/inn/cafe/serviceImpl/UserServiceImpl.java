@@ -58,9 +58,19 @@ public class UserServiceImpl implements UserService {
     }
     private  boolean validateSignUp(Map<String,String>requestMap){
 
+      boolean isEmpty=  requestMap.get("name").isEmpty();
+        System.out.println("EMpltyyyyyyyyyyyyyyyyyyyy"+isEmpty);
+
         if(requestMap.containsKey("name") && requestMap.containsKey("contactNumber") && requestMap.containsKey("email") && requestMap.containsKey("password")){
 
-            return  true;
+
+            if(!requestMap.get("name").isEmpty()&& !requestMap.get("contactNumber").isEmpty() && !requestMap.get("email").isEmpty() && !requestMap.get("password").isEmpty()){
+
+                return  true;
+
+            }
+
+
         }
         return  false;
     }
