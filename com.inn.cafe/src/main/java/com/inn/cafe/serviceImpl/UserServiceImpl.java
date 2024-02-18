@@ -8,11 +8,11 @@ import com.inn.cafe.utils.CafeUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,9 +34,12 @@ public class UserServiceImpl implements UserService {
 
     try{
         if(validateSignUp(requestMap)){
+
+
             User user =repo.findByEmailId(requestMap.get("email"));
             if(Objects.isNull(user)){
                 repo.save(getUserFromMap(requestMap));
+
                 return  CafeUtils.getResponseEntity("Successfully Register.",HttpStatus.OK);
 
             }else{
@@ -56,6 +59,20 @@ public class UserServiceImpl implements UserService {
     return  CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
+
+
+
+    @Transactional
+    @Override
+    public   ResponseEntity<List<User>>getAllUser(){
+
+        List<User> users= repo.findAll();
+        return new   ResponseEntity(users,HttpStatus.OK);
+    }
+
+
+
+
     private  boolean validateSignUp(Map<String,String>requestMap){
 
       boolean isEmpty=  requestMap.get("name").isEmpty();
