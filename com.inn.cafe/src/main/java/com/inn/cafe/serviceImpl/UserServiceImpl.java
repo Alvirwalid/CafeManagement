@@ -1,5 +1,6 @@
 package com.inn.cafe.serviceImpl;
 
+import com.inn.cafe.POJO.Role;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.repository.UserRepository;
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(requestMap.get("email"));
         user.setPassword(requestMap.get("password"));
         user.setStatus("false");
-        user.setRole(requestMap.get("user"));
+        user.setRole(Role.valueOf(requestMap.get("admin")));
 
 
         return  user;

@@ -5,8 +5,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 
 @NamedQuery(name = "User.findByEmailId",query = "select u from User u where  u.email=:email")
@@ -15,7 +20,7 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @Table(name = "user")
-public class User implements Serializable {
+public class User implements UserDetails {
 
     private  static  final  long serialVersionUID=1L;
     @Id
@@ -38,9 +43,44 @@ public class User implements Serializable {
     private  String password;
     @Column(name = "status")
     private String status;
-    @Column(name = "role")
-    private  String role;
 
+
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
 
 }
