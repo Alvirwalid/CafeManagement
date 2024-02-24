@@ -9,20 +9,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 
-@NamedQuery(name = "User.findByEmailId",query = "select u from User u where  u.email=:email")
+@NamedQuery(name = "User.findByUsername",query = "select u from User u where  u.username=:username")
 @Entity
 @DynamicUpdate
 @DynamicInsert
 @Data
 @Table(name = "user")
-public class User implements UserDetails {
+public class User  implements  UserDetails{
 
-    private  static  final  long serialVersionUID=1L;
+//    private  static  final  long serialVersionUID=1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,8 +34,8 @@ public class User implements UserDetails {
 
     private String contactNumber;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "username")
+    private String username;
 
 
     @Column(name = "password")
@@ -44,12 +43,8 @@ public class User implements UserDetails {
     @Column(name = "status")
     private String status;
 
-
     @Enumerated(value = EnumType.STRING)
     private Role role;
-
-    @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
 
 
     @Override
@@ -59,7 +54,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override
@@ -81,6 +76,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-
 }
