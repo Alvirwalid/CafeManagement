@@ -3,7 +3,6 @@ package com.inn.cafe.jwt.service;
 
 import com.inn.cafe.POJO.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
-import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.utils.CafeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 
 @Slf4j
@@ -82,7 +79,8 @@ public class AuthService {
         );
 
         User user=repo.findByUsername(request.getUsername()).orElseThrow();
-        String token=jwtService.generateToken(user);
+        String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
+
 
         return new   AuthenticationResponse(token);
     }
@@ -120,7 +118,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(request.getStatus());
         user.setRole(request.getRole());
-        jwtService.generateToken(user);
+        jwtService.generateToken(user.getUsername(),user.getRole().toString());
 
         return  user;
 

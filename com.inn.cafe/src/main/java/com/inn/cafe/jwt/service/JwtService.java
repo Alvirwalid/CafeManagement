@@ -11,15 +11,34 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
     private  final  String SECRET_KEY="a94cfea912ae936a59f2c8bf553f28ac47e1b85301b09e3157fa0034914fe793";
+
+
     public  String extractUsername(String token){
 
-        return  extractClaims(token, Claims::getSubject);
+        Claims claims=Jwts.parser()
+                .verifyWith(getSigninKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.getSubject();
     }
+    public  String extractRole(String token){
+
+        Claims claims=Jwts.parser()
+                .verifyWith(getSigninKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return (String) claims.get("role");
+    }
+
 
 
     public  boolean isValid(String token, UserDetails user){
@@ -50,8 +69,28 @@ public class JwtService {
     }
 
 
-    private Claims extractAllClaims(String token){
+    public Claims extractAllClaims(String token){
 
+
+//        System.out.println("extractAllClaims");
+//        System.out.println("extractAllClaims"+Jwts.parser()
+//                .verifyWith(getSigninKey())
+//                .build()
+//                .parseSignedClaims(token)
+//                .getPayload());
+//
+//       boolean u= isUser(token);
+//       boolean a= isAdmin(token);
+//
+//        System.out.println("User ::"+u);
+//        System.out.println("Admin ::"+a);
+//
+//        String name=getCurrentUsername(token);
+//
+//
+//        System.out.println("User ::"+u);
+//        System.out.println("Admin ::"+a);
+//        System.out.println("Name ::"+name);
         return  Jwts.parser()
                 .verifyWith(getSigninKey())
                 .build()
@@ -60,14 +99,27 @@ public class JwtService {
     }
 
 
-    public  String generateToken(User user){
+    public  String generateToken(String username,String role){
+
+        Map<String,Object> claims=new HashMap<>();
+        claims.put("role",role);
+
+
+        return createToken(claims,username);
+    }
+
+    public  String createToken( Map<String,Object> claims,String subject){
 
         String token= Jwts.builder()
-                .subject(user.getUsername())
+                .claims(claims)
+                .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+24*60*60*1000))
                 .signWith(getSigninKey())
                 .compact();
+
+
+
 
 
         return  token;
@@ -84,7 +136,33 @@ public class JwtService {
     }
 
 
+//    public  boolean isAdmin(String role){
+//
+//
+//        return  "admin".equalsIgnoreCase(role);
+//    }
 
+    public  boolean isAdmin(String token){
+
+        Claims claims=Jwts.parser()
+                .verifyWith(getSigninKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return  "admin".equalsIgnoreCase((String) claims.get("role"));
+    }
+    public  boolean isUser(String token){
+
+        Claims claims=Jwts.parser()
+                .verifyWith(getSigninKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return  "user".equalsIgnoreCase((String) claims.get("role"));
+    }
+    public  String getCurrentUsername(String token){
+        return  extractUsername(token);
+    }
 
 
 }

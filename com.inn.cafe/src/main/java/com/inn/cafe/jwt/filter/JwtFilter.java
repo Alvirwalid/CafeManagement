@@ -3,6 +3,7 @@ package com.inn.cafe.jwt.filter;
 
 import com.inn.cafe.jwt.service.JwtService;
 import com.inn.cafe.jwt.service.UserDetailsServiceImp;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private  final UserDetailsServiceImp userDetailsServiceImp;
 
+
+    private  String username=null;
+    private  String role=null;
+    private  String tokenForCurrentUser=null;
+
     public JwtFilter(JwtService jwtService, UserDetailsServiceImp userDetailsServiceImp) {
         this.jwtService = jwtService;
         this.userDetailsServiceImp = userDetailsServiceImp;
@@ -34,10 +40,18 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull   HttpServletResponse response, @NotNull  FilterChain filterChain) throws ServletException, IOException {
 
 
+        System.out.println("OncePerRequestFilter");
+
+
+
+//        if(request.getServletPath().matches("/signup|/login|/forgotPassword"))
+
+
 
         String authHeader=request.getHeader("Authorization");
 
         if(authHeader ==null || !authHeader.startsWith("Bearer")){
+            System.out.println("Null Header");
 
             filterChain.doFilter(request,response);
             return;
@@ -45,7 +59,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         String token=authHeader.substring(7);
-        String username= jwtService.extractUsername(token);
+         tokenForCurrentUser=authHeader.substring(7);
+
+         username= jwtService.extractUsername(token);
+         jwtService.extractAllClaims(token);
+
+
+          role=jwtService.extractRole(token);
+         isAdmin();
+         isUser();
+         getCurrentUsername();
+
+
+
+        System.out.println("getCurrentUsername: "+getCurrentUsername());
+        System.out.println("isAdmin: "+isAdmin());
+        System.out.println("isUser: "+isUser());
 
         if(username !=null && SecurityContextHolder.getContext().getAuthentication()==null){
 
@@ -67,4 +96,23 @@ public class JwtFilter extends OncePerRequestFilter {
 filterChain.doFilter(request,response);
 
     }
+
+
+    public boolean isAdmin(){
+
+        return  "admin".equalsIgnoreCase(role);
+    }
+    public boolean isUser(){
+
+        return  "user".equalsIgnoreCase(role);
+    }
+
+    public  String getCurrentUsername(){
+        return jwtService.  extractUsername(tokenForCurrentUser);
+    }
+
+
+
+
+
 }
