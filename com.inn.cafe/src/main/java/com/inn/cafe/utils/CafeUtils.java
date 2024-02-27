@@ -1,6 +1,6 @@
 package com.inn.cafe.utils;
 
-import com.inn.cafe.POJO.AuthenticationResponse;
+import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

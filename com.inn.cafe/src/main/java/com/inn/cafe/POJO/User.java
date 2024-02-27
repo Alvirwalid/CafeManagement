@@ -1,6 +1,8 @@
 package com.inn.cafe.POJO;
 
 
+import com.inn.cafe.POJO.auth.Role;
+import com.inn.cafe.POJO.auth.Token;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,8 +15,13 @@ import java.util.Collection;
 import java.util.List;
 
 
+
+
 @NamedQuery(name = "User.findByUsername",query = "select u from User u where  u.username=:username")
-@NamedQuery(name = "User.getAllUser",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.status,u.username) from  User u where u.role='admin' ")
+
+
+@NamedQuery(name = "User.getAllUser",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.status,u.username) from  User u where u.role='user' ")
+@NamedQuery(name = "User.getAllAdmin",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.status,u.username) from  User u where u.role='admin'")
 @Entity
 @DynamicUpdate
 @DynamicInsert
@@ -46,6 +53,9 @@ public class User  implements  UserDetails{
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
 
     @Override

@@ -1,7 +1,7 @@
 package com.inn.cafe.jwt.controller;
 
 
-import com.inn.cafe.POJO.AuthenticationResponse;
+import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.jwt.service.AuthService;
 import com.inn.cafe.utils.CafeUtils;

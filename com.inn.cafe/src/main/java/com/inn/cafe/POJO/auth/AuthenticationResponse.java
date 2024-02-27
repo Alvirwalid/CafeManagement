@@ -1,4 +1,4 @@
-package com.inn.cafe.POJO;
+package com.inn.cafe.POJO.auth;
 
 public class AuthenticationResponse {
     private  String token;

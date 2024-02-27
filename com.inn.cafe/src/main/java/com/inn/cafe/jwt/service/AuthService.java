@@ -1,8 +1,10 @@
 package com.inn.cafe.jwt.service;
 
 
-import com.inn.cafe.POJO.AuthenticationResponse;
+import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
+import com.inn.cafe.POJO.auth.Token;
+import com.inn.cafe.repository.TokenRepository;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.utils.CafeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +28,15 @@ public class AuthService {
 
     private  final AuthenticationManager authenticationManager;
 
-    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+    private  final TokenRepository tokenRepository;
+
+    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager,TokenRepository tokenRepository) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.tokenRepository=tokenRepository;
+
     }
 
     public ResponseEntity<String>register(User request){
@@ -41,11 +47,15 @@ public class AuthService {
        try{
 
 
-          boolean isPresence = repo.findByUsername(request.getUsername()).isPresent();
+//          boolean isPresence = repo.findByUsername(request.getUsername()).isPresent();
 
-           if(!isPresence){
+           if(!repo.findByUsername(request.getUsername()).isPresent()){
 
                repo.save(getUserFromRequest(request));
+
+               String jwt= jwtService.generateToken(request.getUsername(),request.getRole().toString());
+
+               saveUserToken(jwt,request);
 
                return CafeUtils.getResponseEntity("Successfully register", HttpStatus.OK) ;
 
@@ -64,6 +74,16 @@ public class AuthService {
        return  CafeUtils.getResponseEntity("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR);
 
 
+
+    }
+
+    private void saveUserToken(String jwt, User user){
+
+        Token token=new Token();
+        token.setToken(jwt);
+        token.setLoggedOut(false);
+        token.setUser(user);
+        tokenRepository.save(token);
 
     }
 
@@ -88,8 +108,6 @@ public class AuthService {
 
 
         private  boolean validateSignUp(User user){
-
-
         if(!user.getName().isBlank() && !user.getContactNumber().isBlank() && !user.getUsername().isBlank() && !user.getRole().toString().isBlank()
         && !user.getPassword().isBlank()){
 

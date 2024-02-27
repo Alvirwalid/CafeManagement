@@ -108,7 +108,7 @@ filterChain.doFilter(request,response);
     }
 
     public  String getCurrentUsername(){
-        return jwtService.  extractUsername(tokenForCurrentUser);
+        return jwtService.extractUsername(tokenForCurrentUser);
     }
 
 

@@ -38,12 +38,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<List<UserWrapper>> getAllUser() {
-//        System.out.printf(repo.getAllUser().toString());
-//        return  new ResponseEntity<List<UserWrapper>>(repo.getAllUser(),HttpStatus.OK);
+        System.out.println("Admin : "+jwtFilter.isAdmin());
+        System.out.println("User : "+jwtFilter.isUser());
+
         try {
             if(jwtFilter.isAdmin()){
-                return  new ResponseEntity<List<UserWrapper>>(repo.getAllUser(),HttpStatus.OK);
 
+                System.out.println("Adminnn");
+                return  new ResponseEntity<List<UserWrapper>>(repo.getAllAdmin(),HttpStatus.OK);
+
+            }else if (jwtFilter.isUser()){
+
+                System.out.println("Adminnn");
+                return  new ResponseEntity<List<UserWrapper>>(repo.getAllUser(),HttpStatus.OK);
             }else {
                 return  new ResponseEntity<List<UserWrapper>>(new ArrayList<>(),HttpStatus.UNAUTHORIZED);
             }

@@ -32,9 +32,6 @@ public class UserController {
 
 
 
-
-
-
     @GetMapping("/current-user")
 
     public ResponseEntity<String> currentUser(Principal principal){

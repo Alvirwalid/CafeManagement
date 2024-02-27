@@ -1,7 +1,5 @@
 package com.inn.cafe.wrapper;
 
-import com.inn.cafe.POJO.Role;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
