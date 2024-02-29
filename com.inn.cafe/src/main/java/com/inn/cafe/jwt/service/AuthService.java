@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -40,45 +42,43 @@ public class AuthService {
     }
 
     public ResponseEntity<String>register(User request){
-
         log.info("Inside signup{}",request);
-//        repo.save(getUserFromRequest(request));
-
        try{
-
-
-//          boolean isPresence = repo.findByUsername(request.getUsername()).isPresent();
-
            if(!repo.findByUsername(request.getUsername()).isPresent()){
 
-               repo.save(getUserFromRequest(request));
-
-               String jwt= jwtService.generateToken(request.getUsername(),request.getRole().toString());
-
-               saveUserToken(jwt,request);
-
+              User user= repo.save(getUserFromRequest(request));
+              String jwt=jwtService.generateToken(user.getUsername(),user.getRole().toString());
+              saveToken(jwt,user);
                return CafeUtils.getResponseEntity("Successfully register", HttpStatus.OK) ;
 
-
            }else {
-
-
                return CafeUtils.getResponseEntity("User already exist", HttpStatus.BAD_REQUEST) ;
            }
        }catch (Exception e){
-
            e.printStackTrace();
        }
-
-
        return  CafeUtils.getResponseEntity("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+    public  AuthenticationResponse login(User request){
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+        User user=repo.findByUsername(request.getUsername()).orElseThrow();
+        String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
+
+        System.out.println("User ID : "+user.getId());
+
+     List<Token> tokens=  tokenRepository.findAllTokenByUserId(user.getId());
+//        for (Token t:tokens){
+//            System.out.println(t.getToken());
+//        }
 
 
+
+        return new   AuthenticationResponse(token);
     }
 
-    private void saveUserToken(String jwt, User user){
-
+    private  void  saveToken(String jwt,User user){
         Token token=new Token();
         token.setToken(jwt);
         token.setLoggedOut(false);
@@ -88,22 +88,6 @@ public class AuthService {
     }
 
 
-
-    public  AuthenticationResponse login(User request){
-
-
-//        System.out.printf("Loginnnnnnnn "+request.getUsername(),request.getPassword());
-
-
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        User user=repo.findByUsername(request.getUsername()).orElseThrow();
-        String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
-
-
-        return new   AuthenticationResponse(token);
-    }
 
 
 

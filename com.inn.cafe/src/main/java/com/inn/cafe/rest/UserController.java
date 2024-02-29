@@ -30,6 +30,20 @@ public class UserController {
 
     }
 
+    @PutMapping("updateStatus")
+    ResponseEntity<String>updateStatus(@RequestBody(required = true) Map<String,String>request){
+        System.out.println(request);
+
+        return  service.updateSatus(request);
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+
+        System.out.println("Callllllllllllllll");
+        return "Logout";
+    }
+
 
 
     @GetMapping("/current-user")

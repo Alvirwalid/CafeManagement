@@ -3,6 +3,7 @@ package com.inn.cafe.repository;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.wrapper.UserWrapper;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -15,5 +16,12 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
    List<UserWrapper> getAllUser();
    List<UserWrapper> getAllAdmin();
+
+String updateQuery= "update user u  " +
+        "set u.status=%:status% " +
+        "where u.id=%:id%";
+
+   @Query(value =updateQuery,nativeQuery = true)
+   Integer updateStatus(@Param("status") String status,@Param("id") Integer id);
 //    Optional<User> findByUsername(String username);
 }
