@@ -3,7 +3,6 @@ package com.inn.cafe.jwt.controller;
 
 import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
-import com.inn.cafe.POJO.auth.Token;
 import com.inn.cafe.jwt.service.AuthService;
 import com.inn.cafe.repository.TokenRepository;
 import com.inn.cafe.utils.CafeUtils;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 public class AuthController {
@@ -27,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody(required = true) User user){
+    public ResponseEntity<String> signUp(@RequestBody() User user){
 
         try{
             return  authService.register(user);

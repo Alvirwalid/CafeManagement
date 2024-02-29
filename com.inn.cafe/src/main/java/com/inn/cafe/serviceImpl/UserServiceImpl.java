@@ -8,8 +8,6 @@ import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.service.UserService;
 import com.inn.cafe.utils.CafeUtils;
 import com.inn.cafe.wrapper.UserWrapper;
-import io.jsonwebtoken.Jws;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

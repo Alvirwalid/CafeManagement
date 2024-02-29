@@ -1,9 +1,5 @@
 package com.inn.cafe.rest;
-
-
-import com.inn.cafe.POJO.User;
 import com.inn.cafe.service.UserService;
-import com.inn.cafe.utils.CafeUtils;
 import com.inn.cafe.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +27,7 @@ public class UserController {
     }
 
     @PutMapping("updateStatus")
-    ResponseEntity<String>updateStatus(@RequestBody(required = true) Map<String,String>request){
+    ResponseEntity<String>updateStatus(@RequestBody() Map<String,String>request){
         System.out.println(request);
 
         return  service.updateSatus(request);
@@ -49,7 +45,7 @@ public class UserController {
     @GetMapping("/current-user")
 
     public ResponseEntity<String> currentUser(Principal principal){
-        return new  ResponseEntity(principal.getName(),HttpStatus.OK);
+        return new  ResponseEntity<>(principal.getName(),HttpStatus.OK);
 
     }
 }
