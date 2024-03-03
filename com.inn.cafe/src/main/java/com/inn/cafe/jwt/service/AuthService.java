@@ -7,11 +7,14 @@ import com.inn.cafe.POJO.auth.Token;
 import com.inn.cafe.repository.TokenRepository;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.utils.CafeUtils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,26 +22,27 @@ import java.util.List;
 
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class AuthService {
-
+    @Autowired
     private  final UserRepository repo;
-
-    private  final PasswordEncoder passwordEncoder;
-
+    @Autowired
+    private  final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
     private  final  JwtService jwtService ;
-
+    @Autowired
     private  final AuthenticationManager authenticationManager;
-
+    @Autowired
     private  final TokenRepository tokenRepository;
 
-    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, TokenRepository tokenRepository) {
-        this.repo = repo;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-        this.tokenRepository = tokenRepository;
-    }
+//    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, TokenRepository tokenRepository) {
+//        this.repo = repo;
+//        this.passwordEncoder = passwordEncoder;
+//        this.jwtService = jwtService;
+//        this.authenticationManager = authenticationManager;
+//        this.tokenRepository = tokenRepository;
+//    }
 
     public ResponseEntity<String>register(User request){
         log.info("Inside signup{}",request);
@@ -61,6 +65,7 @@ public class AuthService {
     }
     public  AuthenticationResponse login(User request){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
 
         User user=repo.findByUsername(request.getUsername()).orElseThrow();
         String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());

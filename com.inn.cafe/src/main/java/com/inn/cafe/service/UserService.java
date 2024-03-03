@@ -14,6 +14,9 @@ ResponseEntity<List<UserWrapper>>getAllUser();
 
 
 ResponseEntity<String>updateSatus(Map<String,String>request);
+ResponseEntity<String>checkToken();
+ResponseEntity<String>changePassword(Map<String,String>requestMap);
+
 
 
 

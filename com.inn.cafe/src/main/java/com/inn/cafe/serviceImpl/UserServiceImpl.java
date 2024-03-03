@@ -11,9 +11,12 @@ import com.inn.cafe.utils.EmailSenderService;
 import com.inn.cafe.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -30,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final JwtFilter jwtFilter;
     @Autowired
    private final EmailSenderService emailSenderService;
+//    @Autowired
+    private  final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
 
@@ -88,6 +93,60 @@ public class UserServiceImpl implements UserService {
         }
           return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> checkToken() {
+
+        try{}catch (Exception e){
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> changePassword(Map<String,String>requestMap) {
+        try{
+
+
+
+
+//         User userObj=   repo.findByUsername(requestMap.get("username")).orElseThrow(); // after logout
+         User userObj=   repo.findByUsername(jwtFilter.getCurrentUsername()).orElseThrow();
+
+            System.out.println("Raw"+userObj.getPassword());
+            System.out.println("Old"+requestMap.get("oldPassword"));
+
+
+         boolean isMatchPassword=this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.getPassword());
+
+//            System.out.println("Match Password : "+isMatchPassword);
+
+
+         if(!userObj.equals(null)){
+
+             System.out.println("From Database"+userObj.getPassword());
+
+             if(isMatchPassword){
+                 userObj.setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));
+
+                 repo.save(userObj);
+
+                 return  CafeUtils.getResponseEntity("Password updated successfully", HttpStatus.OK);
+
+             };
+             return  CafeUtils.getResponseEntity("Invalid old Password", HttpStatus.BAD_REQUEST);
+
+         }
+
+
+            return  CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private void   sendToMailAllAdmin(String status,String username,List<UserWrapper>allAdmin){
 
 

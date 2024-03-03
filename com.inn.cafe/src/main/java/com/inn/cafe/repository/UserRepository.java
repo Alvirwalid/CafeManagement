@@ -28,5 +28,8 @@ String updateQuery= "update user u  " +
    @Modifying
    @Query(value =updateQuery,nativeQuery = true)
    Integer updateStatus(@Param("status") String status,@Param("id") Integer id);
+
+
+
 //    Optional<User> findByUsername(String username);
 }

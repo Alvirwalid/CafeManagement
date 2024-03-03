@@ -48,4 +48,20 @@ public class UserController {
         return new  ResponseEntity<>(principal.getName(),HttpStatus.OK);
 
     }
+
+
+    @GetMapping("checktoken")
+
+    public  ResponseEntity<String>checkToken(){
+        return  service.checkToken();
+    }
+
+
+    @PostMapping("/changepssword")
+    public  ResponseEntity<String>changePassword(@RequestBody Map<String,String>requestMap){
+
+//        System.out.println(requestMap);
+
+        return  service.changePassword(requestMap);
+    }
 }
