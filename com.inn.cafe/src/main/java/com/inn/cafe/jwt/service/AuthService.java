@@ -4,9 +4,11 @@ package com.inn.cafe.jwt.service;
 import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.POJO.auth.Token;
+import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.TokenRepository;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.utils.CafeUtils;
+import com.inn.cafe.utils.EmailSenderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +34,12 @@ public class AuthService {
 
     private  final TokenRepository tokenRepository;
 
-    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager,TokenRepository tokenRepository) {
+    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, TokenRepository tokenRepository) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
-        this.tokenRepository=tokenRepository;
-
+        this.tokenRepository = tokenRepository;
     }
 
     public ResponseEntity<String>register(User request){
@@ -87,10 +88,6 @@ public class AuthService {
 
     }
 
-
-
-
-
         private  boolean validateSignUp(User user){
         if(!user.getName().isBlank() && !user.getContactNumber().isBlank() && !user.getUsername().isBlank() && !user.getRole().toString().isBlank()
         && !user.getPassword().isBlank()){
@@ -125,6 +122,8 @@ public class AuthService {
         return  user;
 
     }
+
+
 
 
 

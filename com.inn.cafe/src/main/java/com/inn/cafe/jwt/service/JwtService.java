@@ -136,30 +136,6 @@ public class JwtService {
     }
 
 
-//    public  boolean isAdmin(String role){
-//
-//
-//        return  "admin".equalsIgnoreCase(role);
-//    }
-
-    public  boolean isAdmin(String token){
-
-        Claims claims=Jwts.parser()
-                .verifyWith(getSigninKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return  "admin".equalsIgnoreCase((String) claims.get("role"));
-    }
-    public  boolean isUser(String token){
-
-        Claims claims=Jwts.parser()
-                .verifyWith(getSigninKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return  "user".equalsIgnoreCase((String) claims.get("role"));
-    }
     public  String getCurrentUsername(String token){
         return  extractUsername(token);
     }

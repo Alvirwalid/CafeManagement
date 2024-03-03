@@ -20,8 +20,8 @@ import java.util.List;
 @NamedQuery(name = "User.findByUsername",query = "select u from User u where  u.username=:username")
 
 
-@NamedQuery(name = "User.getAllUser",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.status,u.username) from  User u where u.role='user' ")
-@NamedQuery(name = "User.getAllAdmin",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.status,u.username) from  User u where u.role='admin'")
+@NamedQuery(name = "User.getAllUser",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.username,u.status) from  User u where u.role='user' ")
+@NamedQuery(name = "User.getAllAdmin",query = "select new com.inn.cafe.wrapper.UserWrapper(u.id,u.name,u.contactNumber,u.username,u.status) from  User u where u.role='admin'")
 
 //@NamedQuery(name = "User.updateStatus",query ="update User u  set u.status=:status where u.id=:id")
 @Entity
