@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 
 @Slf4j
@@ -29,8 +28,6 @@ public class UserServiceImpl implements UserService {
    private final UserRepository repo;
     @Autowired
     private final JwtFilter jwtFilter;
-    @Autowired
-   private final JwtService jwtService;
     @Autowired
    private final EmailSenderService emailSenderService;
 

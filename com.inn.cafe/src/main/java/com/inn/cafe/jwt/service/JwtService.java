@@ -1,7 +1,4 @@
 package com.inn.cafe.jwt.service;
-
-
-import com.inn.cafe.POJO.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -110,19 +107,14 @@ public class JwtService {
 
     public  String createToken( Map<String,Object> claims,String subject){
 
-        String token= Jwts.builder()
+
+        return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+24*60*60*1000))
                 .signWith(getSigninKey())
                 .compact();
-
-
-
-
-
-        return  token;
 
     }
 
