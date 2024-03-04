@@ -17,6 +17,8 @@ ResponseEntity<String>updateSatus(Map<String,String>request);
 ResponseEntity<String>checkToken();
 ResponseEntity<String>changePassword(Map<String,String>requestMap);
 
+ResponseEntity<String>forgotPassword(Map<String,String>request);
+
 
 
 

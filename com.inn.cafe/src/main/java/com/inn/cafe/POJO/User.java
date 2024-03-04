@@ -31,23 +31,17 @@ import java.util.List;
 @Table(name = "user")
 public class User  implements  UserDetails{
 
-//    private  static  final  long serialVersionUID=1L;
+    private  static  final  long serialVersionUID=1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private  Integer id;
     @Column(name = "name")
     private String name;
-
-
     @Column(name = "contactNumber")
-
     private String contactNumber;
-
     @Column(name = "username")
     private String username;
-
-
     @Column(name = "password")
     private  String password;
     @Column(name = "status")

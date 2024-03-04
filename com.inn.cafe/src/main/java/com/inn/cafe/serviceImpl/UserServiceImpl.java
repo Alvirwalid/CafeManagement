@@ -1,22 +1,20 @@
 package com.inn.cafe.serviceImpl;
 
+import com.google.common.base.Strings;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
-import com.inn.cafe.jwt.service.JwtService;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.service.UserService;
 import com.inn.cafe.utils.CafeUtils;
-import com.inn.cafe.utils.EmailSenderService;
+import com.inn.cafe.utils.EmailSenderUtils;
 import com.inn.cafe.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -32,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final JwtFilter jwtFilter;
     @Autowired
-   private final EmailSenderService emailSenderService;
+   private final EmailSenderUtils emailSenderUtils;
 //    @Autowired
     private  final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -106,38 +104,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<String> changePassword(Map<String,String>requestMap) {
         try{
-
-
-
-
 //         User userObj=   repo.findByUsername(requestMap.get("username")).orElseThrow(); // after logout
          User userObj=   repo.findByUsername(jwtFilter.getCurrentUsername()).orElseThrow();
 
-            System.out.println("Raw"+userObj.getPassword());
-            System.out.println("Old"+requestMap.get("oldPassword"));
-
-
-         boolean isMatchPassword=this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.getPassword());
-
-//            System.out.println("Match Password : "+isMatchPassword);
-
-
          if(!userObj.equals(null)){
-
-             System.out.println("From Database"+userObj.getPassword());
-
-             if(isMatchPassword){
+             if(this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.getPassword())){
                  userObj.setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));
-
                  repo.save(userObj);
-
                  return  CafeUtils.getResponseEntity("Password updated successfully", HttpStatus.OK);
-
              };
              return  CafeUtils.getResponseEntity("Invalid old Password", HttpStatus.BAD_REQUEST);
 
          }
-
 
             return  CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -147,28 +125,44 @@ public class UserServiceImpl implements UserService {
         return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private void   sendToMailAllAdmin(String status,String username,List<UserWrapper>allAdmin){
+    @Override
+    public ResponseEntity<String> forgotPassword(Map<String, String> request) {
 
+        try {
+            User user = repo.findByUsername(request.get("username")).orElseThrow();
+            if(!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getUsername())){
+                emailSenderUtils.forgotMail(user.getUsername(),"Credentials by cafe management system",user.getPassword());
+                return  CafeUtils.getResponseEntity("Check yor email for credentials",HttpStatus.OK);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void   sendToMailAllAdmin(String status,String username,List<UserWrapper>allAdmin){
 
         List<UserWrapper> l= allAdmin.stream().filter(userWrapper -> userWrapper.getUsername().equalsIgnoreCase(jwtFilter.getCurrentUsername())).toList();
         allAdmin.remove(l.get(0));
 
-        System.out.println("llllllllllllllllllllllllllllllllll"+allAdmin);
-
         List<String>ccList=new ArrayList<>();
 
-        for (int i=0;i<allAdmin.size();i++){
-
-            ccList.add(allAdmin.get(i).getUsername());
+        for(UserWrapper userWrapper:allAdmin){
+            ccList.add(userWrapper.getUsername());
         }
 
-        System.out.println("CC LIST "+ccList.size());
+//        for (int i=0;i<allAdmin.size();i++){
+//
+//            ccList.add(allAdmin.get(i).getUsername());
+//        }
+
+//        System.out.println("CC LIST "+ccList.size());
 
         if(status !=null && status.equalsIgnoreCase("true")){
 
 //            System.out.println("Send gmail");
 
-            emailSenderService.sendEmail(jwtFilter.getCurrentUsername(),"Account Approved","User:- "+username +"\n is approve by \n Admin",ccList);
+            emailSenderUtils.sendEmail(jwtFilter.getCurrentUsername(),"Account Approved","User:- "+username +"\n is approve by \n Admin",ccList);
         }
     }
 

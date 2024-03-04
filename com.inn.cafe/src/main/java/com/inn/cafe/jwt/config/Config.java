@@ -45,7 +45,7 @@ public class Config {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
         return  http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req->req.requestMatchers("/signup/**","/login/**","/tokens","/user/get","/user/updateStatus","/user/changepssword")
+                        req->req.requestMatchers("/signup/**","/login/**","/tokens","/user/forgotPassword")
                                 .permitAll()
                                 .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
                                 .requestMatchers("/user_only/**").hasAuthority("USER")

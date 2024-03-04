@@ -1,6 +1,7 @@
 package com.inn.cafe.rest;
 import com.inn.cafe.service.UserService;
 import com.inn.cafe.wrapper.UserWrapper;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,8 +61,12 @@ public class UserController {
     @PostMapping("/changepssword")
     public  ResponseEntity<String>changePassword(@RequestBody Map<String,String>requestMap){
 
-//        System.out.println(requestMap);
-
         return  service.changePassword(requestMap);
+    }
+
+    @PostMapping("forgotPassword")
+
+    public  ResponseEntity<String>forgotpassword(@Valid @RequestBody Map<String,String>requestMap){
+        return service.forgotPassword(requestMap);
     }
 }
