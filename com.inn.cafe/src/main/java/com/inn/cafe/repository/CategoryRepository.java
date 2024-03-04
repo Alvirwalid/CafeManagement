@@ -9,7 +9,7 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category,Integer> {
 
 
-    String getAllQ="select c.* from category";
-    @Query(value = getAllQ,nativeQuery = true)
+//    String getAllQ="select c.* from category c";
+//    @Query(value = getAllQ,nativeQuery = true)
     List<Category>getAllCategory();
 }

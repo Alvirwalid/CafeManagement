@@ -26,7 +26,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseEntity<List<Category>> getAllcategory() {
 
-
         try{
             return new  ResponseEntity<>(categoryRepository.getAllCategory(),HttpStatus.OK);
         }catch (Exception e){e.printStackTrace();}
@@ -39,22 +38,28 @@ public class CategoryServiceImpl implements CategoryService {
 
 
         try {
-
             if(jwtFilter.isAdmin()){
-
                 if(validateCategoryMap(requestMap,false)){
-
+                    categoryRepository.save(getCategoryFromMap(requestMap,false));
+                    return  CafeUtils.getResponseEntity("Category Added Successfully",HttpStatus.OK);
                 }
-
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
+
+    private  Category getCategoryFromMap(Map<String,String>requestMap,Boolean isAdd){
+        Category category=new Category();
+        if(isAdd){
+            category.setId(Integer.parseInt(requestMap.get("id")));
+        }
+        category.setName("name");
+        return  category;
+    }
 
     private  boolean validateCategoryMap(Map<String,String>requestMap,boolean validateId){
 
