@@ -1,4 +1,4 @@
-package com.inn.cafe.rest;
+package com.inn.cafe.Controller;
 
 
 import com.inn.cafe.POJO.Category;
@@ -19,13 +19,19 @@ public class CategoryController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<Category>>getAllCategory(){
-        return  service.getAllcategory();
+    public ResponseEntity<List<Category>>getAllCategory(@RequestParam(required = false) String filterData){
+        return  service.getAllcategory(filterData);
     }
 
     @PostMapping("/add")
     public  ResponseEntity<String>addAll(@RequestBody Map<String,String>requestMap){
         return service.addCategory(requestMap);
+    }
+
+    @PutMapping("/update")
+    public  ResponseEntity<String>update(@RequestBody Map<String,String>requestMap){
+
+        return  service.updatecategory(requestMap);
     }
 
 

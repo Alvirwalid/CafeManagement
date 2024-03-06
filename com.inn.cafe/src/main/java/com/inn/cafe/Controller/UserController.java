@@ -1,4 +1,4 @@
-package com.inn.cafe.rest;
+package com.inn.cafe.Controller;
 import com.inn.cafe.service.UserService;
 import com.inn.cafe.wrapper.UserWrapper;
 import jakarta.validation.Valid;
