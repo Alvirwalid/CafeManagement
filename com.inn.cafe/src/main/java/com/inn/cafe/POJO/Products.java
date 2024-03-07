@@ -7,6 +7,10 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 
+
+//@NamedQuery(name = "Products.updateProductStatus",query = "update  Products p  set  p.status =:status where p.id=:id")
+@NamedQuery(name = "Products.getAllProduct",query = "select  new  com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from  Products p where  p.status='true'")
+@NamedQuery(name = "Products.getProductById",query = "select  new  com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from  Products p where  p.id=:id")
 @Data
 @Entity
 @DynamicUpdate
@@ -21,7 +25,6 @@ public class Products implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     Integer id;
-
     @Column(name = "name")
     private  String name;
 

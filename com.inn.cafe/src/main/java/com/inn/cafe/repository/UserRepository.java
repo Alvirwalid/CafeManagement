@@ -13,14 +13,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-
    Optional<User> findByUsername(@Param("username")String username);
-
-
-
    List<UserWrapper> getAllUser();
    List<UserWrapper> getAllAdmin();
-
 String updateQuery= "update user u  " +
         "set u.status=%:status% " +
         "where u.id=%:id%";
