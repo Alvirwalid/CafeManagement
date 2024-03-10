@@ -1,14 +1,9 @@
 package com.inn.cafe.Controller;
-
-
-import com.inn.cafe.POJO.Category;
 import com.inn.cafe.service.CategoryService;
 import com.inn.cafe.utils.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController

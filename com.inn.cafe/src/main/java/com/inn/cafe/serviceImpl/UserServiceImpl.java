@@ -113,14 +113,13 @@ public class UserServiceImpl implements UserService {
                  userObj.get().setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));
                  repo.save(userObj.get());
                  return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, UPDATE_MESSAGE,UPDATE_MESSAGE_BN), HttpStatus.OK);
-             };
+             }
              return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, "Invalid old Password",""), HttpStatus.BAD_REQUEST);
 
          }
             return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, "User Not Found",""), HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
-            e.printStackTrace();
             return new ResponseEntity<>(cafeUtils.generateErrorResponse(e), HttpStatus.BAD_REQUEST);
         }
 

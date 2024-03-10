@@ -2,7 +2,6 @@ package com.inn.cafe.utils;
 
 import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.constant.BaseConstant;
-import com.inn.cafe.constant.CafeConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;

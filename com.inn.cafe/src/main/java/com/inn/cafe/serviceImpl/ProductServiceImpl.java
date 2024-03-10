@@ -2,14 +2,12 @@ package com.inn.cafe.serviceImpl;
 
 import com.inn.cafe.POJO.Category;
 import com.inn.cafe.POJO.Products;
-import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.CategoryRepository;
 import com.inn.cafe.repository.ProductRepository;
 import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
 import com.inn.cafe.wrapper.ProductWrapper;
-import com.inn.cafe.wrapper.UserWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,8 +59,6 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
 
         try {
-
-            List<ProductWrapper> userWrapper =repo.getAllProduct();
             return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllProduct(),"",""),HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);

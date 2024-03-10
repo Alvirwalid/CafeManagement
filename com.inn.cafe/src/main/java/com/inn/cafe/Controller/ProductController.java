@@ -1,18 +1,11 @@
 package com.inn.cafe.Controller;
-
-
-import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.service.ProductService;
 import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
-import com.inn.cafe.wrapper.ProductWrapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController

@@ -2,7 +2,6 @@ package com.inn.cafe.serviceImpl;
 
 import com.google.common.base.Strings;
 import com.inn.cafe.POJO.Category;
-import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.CategoryRepository;
 import com.inn.cafe.service.CategoryService;
