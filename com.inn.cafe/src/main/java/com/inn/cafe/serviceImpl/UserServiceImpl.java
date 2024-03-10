@@ -6,6 +6,7 @@ import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.UserRepository;
 import com.inn.cafe.service.UserService;
+import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
 import com.inn.cafe.utils.EmailSenderUtils;
 import com.inn.cafe.wrapper.UserWrapper;
@@ -34,62 +35,59 @@ public class UserServiceImpl implements UserService {
 //    @Autowired
     private  final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private  final  CafeUtils cafeUtils;
+
 
 
     @Override
-    public ResponseEntity<List<UserWrapper>> getAllUser() {
+    public ResponseEntity<BaseResponse> getAllUser() {
 
         try {
             if(jwtFilter.isAdmin()){
-
-                return  new ResponseEntity<List<UserWrapper>>(repo.getAllAdmin(),HttpStatus.OK);
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllAdmin(),"",""),HttpStatus.OK);
             }else if (jwtFilter.isUser()){
 
-                return  new ResponseEntity<List<UserWrapper>>(repo.getAllUser(),HttpStatus.OK);
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllUser(),"",""),HttpStatus.OK);
             }else {
-                return  new ResponseEntity<List<UserWrapper>>(new ArrayList<>(),HttpStatus.UNAUTHORIZED);
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(new ArrayList<>(),UNAUTHORIZE,""),HttpStatus.UNAUTHORIZED);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return  new ResponseEntity<List<UserWrapper>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
     @Override
-    public ResponseEntity<String> updateSatus(Map<String,String>request) {
+    public ResponseEntity<BaseResponse> updateStatus(Map<String,String>request) {
 
         try {
             if(jwtFilter.isAdmin()){
-                System.out.println("Adminnnnn");
-        Optional<User> user=   repo.findById(Integer.parseInt( request.get("id")));
+//                System.out.println("Adminnnnn");
+                 Optional<User> user=   repo.findByUsername(request.get("username"));
+
+                 if(user.isPresent()){
+                    sendToMailAllAdmin(request.get("status"),"alviarash620@gmail.com",repo.getAllAdmin());
+
+                    repo.updateStatus(request.get("status"),user.get().getId());
 
 
+                     return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, UPDATE_MESSAGE,UPDATE_MESSAGE_BN),HttpStatus.OK);
 
-        if(user.isPresent()){
+               }else {
+                    return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, ID_DOESNOT_EXIST,ID_DOESNOT_EXIST_BN),HttpStatus.BAD_REQUEST);
+                }
 
-            sendToMailAllAdmin(request.get("status"),"alviarash620@gmail.com",repo.getAllAdmin());
-
-
-            repo.updateStatus(request.get("status"),Integer.parseInt(request.get("id")));
-
-        }else {
-            return CafeUtils.getResponseEntity("User id not found",HttpStatus.OK);
-        }
-
-                return CafeUtils.getResponseEntity("Successfully update",HttpStatus.OK);
 
             }else {
 
                 System.out.println("Not Admin");
-                return  CafeUtils.getResponseEntity(CafeConstant.UNAUTHORIZE,HttpStatus.UNAUTHORIZED);
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UNAUTHORIZE,""),HttpStatus.UNAUTHORIZED);
             }
 
         }catch (Exception e){
-           e.printStackTrace();
+            return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-          return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
@@ -102,42 +100,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<String> changePassword(Map<String,String>requestMap) {
+    public ResponseEntity<BaseResponse> changePassword(Map<String,String>requestMap) {
         try{
 //         User userObj=   repo.findByUsername(requestMap.get("username")).orElseThrow(); // after logout
-         User userObj=   repo.findByUsername(jwtFilter.getCurrentUsername()).orElseThrow();
 
-         if(!userObj.equals(null)){
-             if(this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.getPassword())){
-                 userObj.setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));
-                 repo.save(userObj);
-                 return  CafeUtils.getResponseEntity("Password updated successfully", HttpStatus.OK);
+           Optional<User> userObj=   repo.findByUsername(jwtFilter.getCurrentUsername());
+
+         if(userObj.isPresent()){
+
+             if(this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.get().getPassword())){
+
+                 userObj.get().setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));
+                 repo.save(userObj.get());
+                 return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, UPDATE_MESSAGE,UPDATE_MESSAGE_BN), HttpStatus.OK);
              };
-             return  CafeUtils.getResponseEntity("Invalid old Password", HttpStatus.BAD_REQUEST);
+             return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, "Invalid old Password",""), HttpStatus.BAD_REQUEST);
 
          }
-
-            return  CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, "User Not Found",""), HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(cafeUtils.generateErrorResponse(e), HttpStatus.BAD_REQUEST);
         }
-        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
-    public ResponseEntity<String> forgotPassword(Map<String, String> request) {
+    public ResponseEntity<BaseResponse> forgotPassword(Map<String, String> request) {
 
         try {
-            User user = repo.findByUsername(request.get("username")).orElseThrow();
-            if(!Objects.isNull(user) && !Strings.isNullOrEmpty(user.getUsername())){
-                emailSenderUtils.forgotMail(user.getUsername(),"Credentials by cafe management system",user.getPassword());
-                return  CafeUtils.getResponseEntity("Check yor email for credentials",HttpStatus.OK);
+            Optional<User> user = repo.findByUsername(request.get("username"));
+            if(user.isPresent() && !Strings.isNullOrEmpty(user.get().getUsername())){
+
+                emailSenderUtils.forgotMail(user.get().getUsername(),"Credentials by cafe management system",user.get().getPassword());
+
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"Check yor email for credentials",""),HttpStatus.OK);
+            }else {
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"User Not Found",""),HttpStatus.OK);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.OK);
         }
-        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     private void   sendToMailAllAdmin(String status,String username,List<UserWrapper>allAdmin){

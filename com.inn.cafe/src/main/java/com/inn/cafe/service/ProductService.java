@@ -1,20 +1,22 @@
 package com.inn.cafe.service;
 
+import com.inn.cafe.constant.BaseConstant;
+import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.wrapper.ProductWrapper;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
 
-public interface ProductService {
+public interface ProductService extends BaseConstant {
 
-    ResponseEntity<String> addNewProduct(Map<String,String>requestMap);
-    ResponseEntity<List<ProductWrapper>> getAllProduct();
+    ResponseEntity<BaseResponse> addNewProduct(Map<String,String>requestMap);
+    ResponseEntity<BaseResponse> getAllProduct();
 
-    ResponseEntity<ProductWrapper> getProductById(Integer id);
+    ResponseEntity<BaseResponse> getProductById(Integer id);
 
-    ResponseEntity<String>update(Map<String,String>requestMap);
-    ResponseEntity<String>delete(Integer id);
-    ResponseEntity<String>updateStatus(Map<String,String>requestMap);
+    ResponseEntity<BaseResponse>update(Map<String,String>requestMap);
+    ResponseEntity<BaseResponse>delete(Integer id);
+    ResponseEntity<BaseResponse>updateStatus(Map<String,String>requestMap);
 
 }

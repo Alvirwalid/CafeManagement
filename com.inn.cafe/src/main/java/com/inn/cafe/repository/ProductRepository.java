@@ -15,11 +15,10 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Products,Integer> {
 
-    List<ProductWrapper>getAllProduct();
+    List<ProductWrapper> getAllProduct();
 
 
     String updateQ ="update products p  set p.status=:status   where p.id=:id";
-
     @Transactional
     @Modifying
     @Query(value = updateQ,nativeQuery = true)

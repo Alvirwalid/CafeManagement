@@ -4,8 +4,13 @@ package com.inn.cafe.jwt.service;
 import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.POJO.auth.Token;
+import com.inn.cafe.constant.BaseConstant;
+import com.inn.cafe.reponse.LoginResponse;
 import com.inn.cafe.repository.TokenRepository;
 import com.inn.cafe.repository.UserRepository;
+import com.inn.cafe.request.LoginRequest;
+import com.inn.cafe.request.SignupRequest;
+import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +28,9 @@ import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
+
 @Service
-public class AuthService {
+public class AuthService implements BaseConstant {
     @Autowired
     private  final UserRepository repo;
     @Autowired
@@ -36,6 +42,8 @@ public class AuthService {
     @Autowired
     private  final TokenRepository tokenRepository;
 
+    private  CafeUtils cafeUtils;
+
 //    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, TokenRepository tokenRepository) {
 //        this.repo = repo;
 //        this.passwordEncoder = passwordEncoder;
@@ -44,44 +52,74 @@ public class AuthService {
 //        this.tokenRepository = tokenRepository;
 //    }
 
-    public ResponseEntity<String>register(User request){
+
+
+    ///////////// REGISTER ////////////////
+    public ResponseEntity<BaseResponse>register(SignupRequest request){
+
         log.info("Inside signup{}",request);
+
+
        try{
+
            if(!repo.findByUsername(request.getUsername()).isPresent()){
 
-              User user= repo.save(getUserFromRequest(request));
-              String jwt=jwtService.generateToken(user.getUsername(),user.getRole().toString());
-              saveToken(jwt,user);
-               return CafeUtils.getResponseEntity("Successfully register", HttpStatus.OK) ;
+               if(validateSignUp(request)){
 
-           }else {
-               return CafeUtils.getResponseEntity("User already exist", HttpStatus.BAD_REQUEST) ;
+                   User user= repo.save(getUserFromRequest(request));
+
+                   String jwt=jwtService.generateToken(user.getUsername(),user.getRole().toString());
+                   saveToken(jwt,user);
+                   return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,REGISTER_MESSAGE,REGISTER_MESSAGE_BN), HttpStatus.OK) ;
+
+
+               }else {
+
+                   return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,INVALID_DATA,INVALID_DATA_BN), HttpStatus.BAD_REQUEST) ;
+
+
+               }
+
+
+           }
+           else {
+               return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,USER_EXIST,USER_EXIST_BN), HttpStatus.BAD_REQUEST) ;
            }
        }catch (Exception e){
-           e.printStackTrace();
+           return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
        }
-       return  CafeUtils.getResponseEntity("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
-    public  AuthenticationResponse login(User request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-
-
-        User user=repo.findByUsername(request.getUsername()).orElseThrow();
-        String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
-
-        System.out.println("User ID : "+user.getId());
-
-     List<Token> tokens=  tokenRepository.findAllTokenByUserId(user.getId());
-//        for (Token t:tokens){
-//            System.out.println(t.getToken());
-//        }
 
 
 
-        return new   AuthenticationResponse(token);
+    //////////// LOGIN //////
+    public  ResponseEntity<?> login(LoginRequest request){
+
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            User user=repo.findByUsername(request.getUsername()).orElseThrow();
+            String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
+            System.out.println("User ID : "+user.getId());
+            List<Token> tokens=  tokenRepository.findAllTokenByUserId(user.getId());
+            BaseResponse res=new BaseResponse();
+            res.setStatus(true);
+            res.setData(new LoginResponse(token,jwtService.extractUsername(token),jwtService.extractRole(token)));
+            return  new ResponseEntity<>(res,HttpStatus.OK);
+
+//            return new   AuthenticationResponse(token);
+        }catch (Exception e){
+            BaseResponse res  = new BaseResponse();
+            res.setStatus(false);
+            res.setMessage("Wrong username or password");
+            return ResponseEntity.ok(res);
+        }
     }
 
+
+
+    ////////////// TOKEN SAVE ////////////
     private  void  saveToken(String jwt,User user){
         Token token=new Token();
         token.setToken(jwt);
@@ -91,39 +129,30 @@ public class AuthService {
 
     }
 
-        private  boolean validateSignUp(User user){
-        if(!user.getName().isBlank() && !user.getContactNumber().isBlank() && !user.getUsername().isBlank() && !user.getRole().toString().isBlank()
-        && !user.getPassword().isBlank()){
+        private  boolean validateSignUp(SignupRequest user){
 
+        if(!(user.getName() ==null)    && !(user.getContactNumber() ==null) && !(user.getUsername() ==null) && !(user.getRole().toString() ==null)
+        && !(user.getPassword()==null)){
 
-            if(!user.getName().isEmpty()&& !user.getContactNumber().isEmpty() && !user.getUsername().isEmpty() && !user.getPassword().isEmpty()
-            && !user.getRole().toString().isEmpty()){
-
-                return  true;
-
-            }
-
-
+            System.out.println("User Valid");
+            return  true;
         }
+            System.out.println("User InValid");
+
         return  false;
     }
 
 
-    public User getUserFromRequest(User request){
+    public User getUserFromRequest(SignupRequest request){
         User user=new User();
-
         user.setName(request.getName());
         user.setContactNumber(request.getContactNumber());
-
         user.setUsername(request.getUsername());
-
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(request.getStatus());
         user.setRole(request.getRole());
         jwtService.generateToken(user.getUsername(),user.getRole().toString());
-
         return  user;
-
     }
 
 

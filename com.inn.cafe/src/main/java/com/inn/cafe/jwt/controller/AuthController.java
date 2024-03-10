@@ -5,6 +5,9 @@ import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.POJO.User;
 import com.inn.cafe.jwt.service.AuthService;
 import com.inn.cafe.repository.TokenRepository;
+import com.inn.cafe.request.LoginRequest;
+import com.inn.cafe.request.SignupRequest;
+import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,18 +28,13 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody() User user){
+    public ResponseEntity<BaseResponse> signUp(@RequestBody() SignupRequest user){
 
-        try{
-            return  authService.register(user);
-
-        }catch (Exception e){
-            return CafeUtils.getResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return  authService.register(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody User request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 

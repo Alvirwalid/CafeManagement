@@ -6,47 +6,53 @@ import com.inn.cafe.constant.CafeConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.CategoryRepository;
 import com.inn.cafe.service.CategoryService;
+import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 
 @Service
+@AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-@Autowired
+    @Autowired
     CategoryRepository repo;
     @Autowired
     JwtFilter jwtFilter;
+
+
+//    @Autowired
+    CafeUtils cafeUtils;
     @Override
-    public ResponseEntity<List<Category>> getAllcategory(String filterData) {
+    public ResponseEntity<BaseResponse> getAllcategory(String filterData) {
 
         try{
             if(!Strings.isNullOrEmpty(filterData) && filterData.equalsIgnoreCase("true")){
 
 //                System.out.println("True");
 
-                return new  ResponseEntity<List<Category>>(repo.getAllCategory(),HttpStatus.OK);
+                return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllCategory(),"",""),HttpStatus.OK);
             }
 
 
 //            System.out.println("False");
-            return new  ResponseEntity<List<Category>>(repo.findAll(),HttpStatus.OK);
+            return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.findAll(),"",""),HttpStatus.OK);
 
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            return new  ResponseEntity<>(cafeUtils.generateErrorResponse(e), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        return new  ResponseEntity<List<Category>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
-    public ResponseEntity<String> addCategory(Map<String,String>requestMap) {
+    public ResponseEntity<BaseResponse> addCategory(Map<String,String>requestMap) {
 
 
         try {
@@ -54,44 +60,52 @@ public class CategoryServiceImpl implements CategoryService {
 
                 if(validateCategoryMap(requestMap,false)){
                     repo.save(getCategoryFromMap(requestMap,false));
-                    return  CafeUtils.getResponseEntity("Category Added Successfully",HttpStatus.OK);
+                    return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,SAVE_MESSAGE,SAVE_MESSAGE_BN),HttpStatus.OK);
+                }else {
+                    return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,INVALID_DATA,INVALID_DATA_BN),HttpStatus.BAD_REQUEST);
                 }
             }
+            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UNAUTHORIZE,""),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
-            e.printStackTrace();
+            return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
-    public ResponseEntity<String> updatecategory(Map<String, String> requestMap) {
-        try {
-            if(jwtFilter.isAdmin()){
+    public ResponseEntity<BaseResponse> updatecategory(Map<String, String> requestMap) {
+
+
+       try {
+
+
+             if(jwtFilter.isAdmin()){
 
                 if(validateCategoryMap(requestMap,true)){
 
-                    Category category= repo.getById(Integer.parseInt(requestMap.get("id")));
-                    if(!Objects.isNull(category)){
-
+                    Optional<Category> category= repo.findById(Integer.parseInt(requestMap.get("id")));
+                    if(category.isPresent()){
                         repo.save(getCategoryFromMap(requestMap,true));
-
-
-                        return  CafeUtils.getResponseEntity("Update SuccessFully",HttpStatus.OK);
+                        return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UPDATE_MESSAGE,UPDATE_MESSAGE_BN),HttpStatus.OK);
 
                     }else {
-                        return  CafeUtils.getResponseEntity("Category id does not exists",HttpStatus.BAD_REQUEST);
+                        return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,ID_DOESNOT_EXIST,ID_DOESNOT_EXIST_BN),HttpStatus.BAD_REQUEST);
                     }
 
 
-                };
-                return  CafeUtils.getResponseEntity(CafeConstant.INVALID_DATA,HttpStatus.BAD_REQUEST);
+                }else {
+                    return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,INVALID_DATA,INVALID_DATA_BN),HttpStatus.BAD_REQUEST);
+
+                }
 
             }
-            return  CafeUtils.getResponseEntity(CafeConstant.UNAUTHORIZE,HttpStatus.UNAUTHORIZED);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+            else {
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UNAUTHORIZE,""),HttpStatus.UNAUTHORIZED);
+            }
+
+       }catch (Exception e){
+           return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.OK);
+       }
     }
 
 

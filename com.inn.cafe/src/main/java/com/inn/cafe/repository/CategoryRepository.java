@@ -1,7 +1,9 @@
 package com.inn.cafe.repository;
 
 import com.inn.cafe.POJO.Category;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,5 +19,5 @@ public interface CategoryRepository extends JpaRepository<Category,Integer> {
 
     String  getIdQ="select c.* from category c where c.id=%:id%";
     @Query(name = getIdQ,nativeQuery = true)
-    Category getById(@Param("id") Integer id);
+    Category getProducById(@Param("id") Integer id);
 }

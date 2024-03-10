@@ -1,6 +1,6 @@
 package com.inn.cafe.Controller;
 import com.inn.cafe.service.UserService;
-import com.inn.cafe.wrapper.UserWrapper;
+import com.inn.cafe.utils.BaseResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,7 +19,7 @@ public class UserController {
 
 
     @GetMapping("/get")
-    ResponseEntity<List<UserWrapper>>getAllUser(){
+    ResponseEntity<BaseResponse>getAllUser(){
 
         return  service.getAllUser();
 
@@ -28,10 +27,9 @@ public class UserController {
     }
 
     @PutMapping("updateStatus")
-    ResponseEntity<String>updateStatus(@RequestBody() Map<String,String>request){
-        System.out.println(request);
+    ResponseEntity<BaseResponse>updateStatus(@RequestBody() Map<String,String>request){
 
-        return  service.updateSatus(request);
+        return  service.updateStatus(request);
     }
 
     @GetMapping("/logout")
@@ -59,14 +57,14 @@ public class UserController {
 
 
     @PostMapping("/changepssword")
-    public  ResponseEntity<String>changePassword(@RequestBody Map<String,String>requestMap){
+    public  ResponseEntity<BaseResponse>changePassword(@RequestBody Map<String,String>requestMap){
 
         return  service.changePassword(requestMap);
     }
 
     @PostMapping("forgotPassword")
 
-    public  ResponseEntity<String>forgotpassword(@Valid @RequestBody Map<String,String>requestMap){
+    public  ResponseEntity<BaseResponse>forgotpassword(@Valid @RequestBody Map<String,String>requestMap){
         return service.forgotPassword(requestMap);
     }
 }

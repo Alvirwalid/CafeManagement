@@ -1,23 +1,24 @@
 package com.inn.cafe.service;
-import com.inn.cafe.wrapper.UserWrapper;
+import com.inn.cafe.constant.BaseConstant;
+import com.inn.cafe.utils.BaseResponse;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
+
 import java.util.Map;
 
-public interface UserService {
+public interface UserService  extends BaseConstant {
 
 
 
 
-ResponseEntity<List<UserWrapper>>getAllUser();
+ResponseEntity<BaseResponse>getAllUser();
 
 
 
-ResponseEntity<String>updateSatus(Map<String,String>request);
+ResponseEntity<BaseResponse> updateStatus(Map<String,String>request);
 ResponseEntity<String>checkToken();
-ResponseEntity<String>changePassword(Map<String,String>requestMap);
+ResponseEntity<BaseResponse>changePassword(Map<String,String>requestMap);
 
-ResponseEntity<String>forgotPassword(Map<String,String>request);
+ResponseEntity<BaseResponse>forgotPassword(Map<String,String>request);
 
 
 
