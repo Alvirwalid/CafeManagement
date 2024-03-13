@@ -31,4 +31,5 @@ public interface BaseConstant {
     String DELETE_MESSAGE_BN = "সফলভাবে ডিলিট করা হয়েছে";
     String DELETE_MESSAGE_FAILED = "Delete Failed";
     String DELETE_MESSAGE_FAILED_BN = "ডিলিট সফল হয়নি";
+    String STORE_LOCATION="D:\\Mywork\\springboot project\\report generate";
 }

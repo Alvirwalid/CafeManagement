@@ -37,7 +37,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
             if(jwtFilter.isAdmin()){
            if(validatedProductMap(requestMap,false)){
 
-               System.out.println("validateProductMap");
+//               System.out.println("validateProductMap");
                   repo.save(getProductFromMap(requestMap,false));
                  return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, SAVE_MESSAGE,SAVE_MESSAGE_BN),HttpStatus.OK);
                 }
@@ -92,12 +92,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
                Optional <Products> optional= repo.findById(Integer.parseInt(requestMap.get("id")));
                 if(optional.isPresent()){
 
-
                     if(validatedProductMap(requestMap,true)){
-
-                        System.out.println("Valid");
-
-                        System.out.println(optional);
                         Products products =getProductFromMap(requestMap,true);
                         products.setStatus(optional.get().getStatus());
                         repo.save(products);
@@ -173,6 +168,15 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
     }
 
+    @Override
+    public ResponseEntity<BaseResponse> getProductByCategoryId(Integer id) {
+        try {
+            return new ResponseEntity<>( cafeUtils.generateSuccessResponse(repo.getProductByCategoryId(id),"",""),HttpStatus.OK) ;
+        }catch (Exception e){
+            return new ResponseEntity<>( cafeUtils.generateErrorResponse(e),HttpStatus.OK) ;
+        }
+    }
+
 
     private  boolean validatedProductMap(Map<String,String>requestMap, boolean validateId){
 
@@ -191,12 +195,11 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
 //        System.out.println("Get Product Map");
         Category category=new Category();
-        Optional <Category>  c= Optional.ofNullable(categoryRepository.getProducById(Integer.parseInt(requestMap.get("categoryId"))));
 
+        Optional <Category>  c= Optional.ofNullable(categoryRepository.getProducById(Integer.parseInt(requestMap.get("categoryId"))));
         category.setId(c.get().getId());
         category.setName(c.get().getName());
 
-//        System.out.println("category"+category);
         Products products=new Products();
         if(isAdd){
             products.setId(Integer.parseInt(requestMap.get("id")));

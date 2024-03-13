@@ -15,5 +15,6 @@ public interface ProductService extends BaseConstant {
     ResponseEntity<BaseResponse>update(Map<String,String>requestMap);
     ResponseEntity<BaseResponse>delete(Integer id);
     ResponseEntity<BaseResponse>updateStatus(Map<String,String>requestMap);
+    ResponseEntity<BaseResponse>getProductByCategoryId(Integer id);
 
 }

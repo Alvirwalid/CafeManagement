@@ -34,11 +34,7 @@ public class UserServiceImpl implements UserService {
    private final EmailSenderUtils emailSenderUtils;
 //    @Autowired
     private  final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private  final  CafeUtils cafeUtils;
-
-
-
     @Override
     public ResponseEntity<BaseResponse> getAllUser() {
 

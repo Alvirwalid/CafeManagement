@@ -16,19 +16,16 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Products,Integer> {
 
     List<ProductWrapper> getAllProduct();
-
-
     String updateQ ="update products p  set p.status=:status   where p.id=:id";
     @Transactional
     @Modifying
     @Query(value = updateQ,nativeQuery = true)
     void updateProductStatus(@Param("status") String status ,@Param("id") Integer id);
 
-
-
-
 //    String q="select p.* from products where p.id=%:id%";
 //    @Query(value = q,nativeQuery = true)
     ProductWrapper getProductById(@Param("id") Integer id);
+
+    List<ProductWrapper> getProductByCategoryId(@Param("id") Integer id);
 
 }

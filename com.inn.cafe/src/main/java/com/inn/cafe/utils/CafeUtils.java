@@ -1,12 +1,21 @@
 package com.inn.cafe.utils;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.inn.cafe.POJO.auth.AuthenticationResponse;
 import com.inn.cafe.constant.BaseConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Component
@@ -67,6 +76,34 @@ public class CafeUtils implements BaseConstant {
             return  message.substring(52,54);
         }
         return "";
+    }
+
+    public  static  String getUUID(){
+        Date date=new Date();
+        long time=date.getTime();
+        return "BILL"+time;
+    }
+
+    public  JSONArray getJsonArrayFromString(String data)throws JSONException {
+        JSONArray jsonArray=new JSONArray(data);
+        return  jsonArray;
+    }
+
+    public   Map<String,Object>getMapFromJson(String data){
+
+        if(!data.isEmpty()){
+            return new  Gson().fromJson(data, new TypeToken<Map<String,Object>>(){}.getType());
+        }
+        return  new HashMap<>();
+    }
+    public  Boolean isExistFile(String path){
+        try {
+            File file=new File(path);
+            return (file !=null && file.exists())?Boolean.TRUE:Boolean.FALSE;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  false;
     }
 
 }

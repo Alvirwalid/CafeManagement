@@ -54,7 +54,11 @@ public class ProductController {
     @PutMapping("/updateStatus")
     public  ResponseEntity<BaseResponse>updateStatus (@RequestBody Map<String,String>requestMap){
         return  service.updateStatus(requestMap);
+    }
 
+    @GetMapping("/get-by-category/{id}")
+    public ResponseEntity<BaseResponse>  getByCategory(@PathVariable Integer id){
+        return  service.getProductByCategoryId(id);
     }
 
 }
