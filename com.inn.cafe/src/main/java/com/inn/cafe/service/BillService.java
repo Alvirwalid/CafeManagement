@@ -16,6 +16,7 @@ public interface BillService extends BaseConstant {
     ResponseEntity<BaseResponse>generateReport(Map<String,String> requestMap);
     ResponseEntity<BaseResponse>getAllBills();
     ResponseEntity<BaseResponse>getPdf(Map<String,String>request);
+    ResponseEntity<BaseResponse>deleteBill(Integer id);
 
 
 

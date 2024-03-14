@@ -50,23 +50,30 @@ public class BillServieImpl implements BillService {
 
         try {
             String fileName;
-
             if(validateRequestMap(requestMap)){
 
-                if (requestMap.containsKey("isGenerate")  && !Boolean.parseBoolean(requestMap.get("isGenerate"))){
+                System.out.println("validateRequestMap");
 
-                     fileName=(String) requestMap.get("uuid");
+                if (requestMap.containsKey("isGenerate")  && Boolean.parseBoolean(requestMap.get("isGenerate"))){
+                      System.out.println("isGenerate");
+                      fileName=(String) requestMap.get("uuid");
                 }else {
+                    System.out.println("Not  isGenerate");
                     fileName = CafeUtils.getUUID();
                     requestMap.put("uuid",fileName);
                     insertBill(requestMap);
                 }
 
                 String data="Name: "+requestMap.get("name")+"\n"+"Contact Number: "+requestMap.get("contactNumber")+"\n"+"Email: "+requestMap.get("email")+"\n"+ "Payment Method: "+requestMap.get("paymentMethod")+"\n";
+
                 Document document=new com.itextpdf.text.Document();
+
                 PdfWriter.getInstance(document,new FileOutputStream(STORE_LOCATION+"\\"+fileName+".pdf"));
+
                 document.open();
+
                 setRectangleInPdf(document);
+
                 Paragraph chunk=new  Paragraph("Cafe Management System",getFont("Header"));
                 chunk.setAlignment(Element.ALIGN_CENTER);
                 document.add(chunk);
@@ -129,50 +136,73 @@ public class BillServieImpl implements BillService {
 
         try {
             byte[] byteArray=new byte[0];
+
             if(!request.containsKey("uuid") && validateRequestMap(request)){
                 return new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.BAD_REQUEST);
             }
+
             String filePath= STORE_LOCATION+"\\"+(String) request.get("uuid")+".pdf";
-
             if(cafeUtils.isExistFile(filePath)){
-
-                byteArray = getByteArray(filePath);
-
+                System.out.println("isFileExist");
+                request.put("isGenerate","true");
+                ResponseEntity res= generateReport(request);
+                BaseResponse uuid = (BaseResponse) res.getBody();
+                byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
                 return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.OK);
             }else {
                 request.put("isGenerate","false");
-                generateReport(request);
+                ResponseEntity res= generateReport(request);
+                System.out.println(res);
+                BaseResponse uuid= (BaseResponse) res.getBody();
+                System.out.println("uuid : "+uuid.getData().toString().substring(9,26));
+                byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
+                return new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.OK);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.OK);
 
         }
-        return null;
+
     }
 
-    private byte[] getByteArray(String filePath)throws  Exception {
-        File initialFile =new File(filePath);
+    @Override
+    public ResponseEntity<BaseResponse> deleteBill(Integer id) {
+        try {
+          Optional<Bill>  bill= repo.findById(id);
+          if (bill.isPresent()){
+              repo.deleteBill(bill.get().getId());
+              return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,DELETE_MESSAGE,DELETE_MESSAGE_BN),HttpStatus.OK);
+          }
+            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,ID_DOESNOT_EXIST,ID_DOESNOT_EXIST_BN),HttpStatus.OK);
 
+        }catch (Exception e){
+            return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    private byte[] getByteArray(String filePath)throws  Exception {
+
+
+
+        File initialFile =new File(filePath);
+//        System.out.println("getByteArray"+targetStream);
         InputStream targetStream=new  FileInputStream(initialFile);
+
+        System.out.println("getByteArray"+targetStream);
 
         byte[] byteArray = IOUtils.toByteArray(targetStream);
         targetStream.close();
-
         return  byteArray;
     }
-
-
     private void addRows(PdfPTable table, Map<String, Object> data) {
         String price = Double.toString((Double) data.get("price"));
         String total = Double.toString((Double) data.get("total"));
-        System.out.println("typeeeee : "+price.getClass().getSimpleName() +"::::::::"+total.getClass().getSimpleName());
+//        System.out.println("typeeeee : "+price.getClass().getSimpleName() +"::::::::"+total.getClass().getSimpleName());
         table.addCell((String) data.get("name"));
         table.addCell((String) data.get("category"));
         table.addCell((String) data.get("quantity"));
         table.addCell(price);
         table.addCell(total);
     }
-
     private void addTableHeader(PdfPTable table) {
         Stream.of("Name","Category","Quantity","Price","Sub Total")
                 .forEach(columnTitle->{
@@ -187,9 +217,6 @@ public class BillServieImpl implements BillService {
 
                 });
     }
-
-
-
     private Font getFont(String type){
         log.info("Inside getFont");
         switch (type){
@@ -208,7 +235,6 @@ public class BillServieImpl implements BillService {
         }
 
     }
-
     private void setRectangleInPdf(Document document) throws DocumentException {
         log.info("Inside setrectangleInPdf");
         Rectangle rect=new Rectangle(577,825,18,15);
@@ -221,7 +247,6 @@ public class BillServieImpl implements BillService {
         rect.setBorderWidth(1);
         document.add(rect);
     }
-
     private void insertBill(Map<String, String> requestMap) {
 
         try {
@@ -241,18 +266,12 @@ public class BillServieImpl implements BillService {
             e.printStackTrace();
         }
     }
-
     private boolean validateRequestMap(Map<String, String> requestMap) {
-
         return  requestMap.containsKey("name")
                 && requestMap.containsKey("contactNumber")
                 && requestMap.containsKey("email")
                 && requestMap.containsKey("paymentMethod")
                 && requestMap.containsKey("productDetails")
                 && requestMap.containsKey("totalAmount");
-
     }
-
-
-
 }

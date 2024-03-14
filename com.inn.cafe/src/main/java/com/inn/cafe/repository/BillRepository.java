@@ -25,4 +25,13 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
     @Modifying
     @Query(value = search,nativeQuery = true)
     List<Bill>getBillByUsername(@Param("username") String username);
+
+
+    String deleteQ="delete bill where id=%:id%";
+
+    @Transactional
+    @Modifying
+    @Query(value = deleteQ,nativeQuery = true)
+    Integer deleteBill(@Param("id") Integer id);
+
 }
