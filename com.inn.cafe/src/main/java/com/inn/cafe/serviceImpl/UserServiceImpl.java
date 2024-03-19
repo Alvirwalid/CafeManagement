@@ -126,12 +126,14 @@ public class UserServiceImpl implements UserService {
 
         try {
             Optional<User> user = repo.findByUsername(request.get("username"));
-            if(user.isPresent() && !Strings.isNullOrEmpty(user.get().getUsername())){
+            if(user.isPresent()){
+                System.out.println("User Found");
 
                 emailSenderUtils.forgotMail(user.get().getUsername(),"Credentials by cafe management system",user.get().getPassword());
 
                 return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"Check yor email for credentials",""),HttpStatus.OK);
             }else {
+                System.out.println("User not Found");
                 return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"User Not Found",""),HttpStatus.OK);
             }
         }catch (Exception e){

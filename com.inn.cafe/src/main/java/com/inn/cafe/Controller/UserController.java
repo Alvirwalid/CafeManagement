@@ -62,7 +62,7 @@ public class UserController {
         return  service.changePassword(requestMap);
     }
 
-    @PostMapping("forgotPassword")
+    @PostMapping("/forgotPassword")
 
     public  ResponseEntity<BaseResponse>forgotpassword(@Valid @RequestBody Map<String,String>requestMap){
         return service.forgotPassword(requestMap);

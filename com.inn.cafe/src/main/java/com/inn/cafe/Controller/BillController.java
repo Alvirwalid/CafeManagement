@@ -1,7 +1,4 @@
 package com.inn.cafe.Controller;
-
-
-import com.google.common.io.BaseEncoding;
 import com.inn.cafe.serviceImpl.BillServieImpl;
 import com.inn.cafe.utils.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;

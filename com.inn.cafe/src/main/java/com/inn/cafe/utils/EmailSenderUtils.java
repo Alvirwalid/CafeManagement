@@ -52,10 +52,9 @@ private  final  JavaMailSender mailSender;
     }
 
     public  void  forgotMail(String to,String subject,String password)throws MessagingException{
+
         MimeMessage message= mailSender.createMimeMessage();
-
         MimeMessageHelper helper=new MimeMessageHelper(message,true);
-
         helper.setFrom("alviarash620@gmail.com");
         helper.setTo(to);
         helper.setSubject(subject);

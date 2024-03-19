@@ -27,7 +27,7 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
     List<Bill>getBillByUsername(@Param("username") String username);
 
 
-    String deleteQ="delete bill where id=%:id%";
+    String deleteQ="delete from bill b where b.id=%:id%";
 
     @Transactional
     @Modifying

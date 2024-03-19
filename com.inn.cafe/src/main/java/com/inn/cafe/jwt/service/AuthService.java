@@ -89,7 +89,7 @@ public class AuthService implements BaseConstant {
 
 
     //////////// LOGIN //////
-    public  ResponseEntity<?> login(LoginRequest request){
+    public  ResponseEntity<BaseResponse> login(LoginRequest request){
 
 
         try {
@@ -101,14 +101,14 @@ public class AuthService implements BaseConstant {
             BaseResponse res=new BaseResponse();
             res.setStatus(true);
             res.setData(new LoginResponse(token,jwtService.extractUsername(token),jwtService.extractRole(token)));
-            return  new ResponseEntity<>(res,HttpStatus.OK);
+            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(res,"Successfully login",""),HttpStatus.OK);
 
 //            return new   AuthenticationResponse(token);
         }catch (Exception e){
             BaseResponse res  = new BaseResponse();
             res.setStatus(false);
             res.setMessage("Wrong username or password");
-            return ResponseEntity.ok(res);
+            return ResponseEntity.ok(cafeUtils.generateErrorResponse(e));
         }
     }
 
