@@ -22,13 +22,13 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse> signUp(@RequestBody() SignupRequest user){
-
+    public ResponseEntity<?> signUp(@RequestBody() SignupRequest user){
+        System.out.println("Calling");
         return  authService.register(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<BaseResponse> login(@RequestBody LoginRequest request) throws Exception {
         return authService.login(request);
     }
 

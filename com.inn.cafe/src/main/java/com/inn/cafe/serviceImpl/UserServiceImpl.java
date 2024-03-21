@@ -89,7 +89,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<String> checkToken() {
 
-        try{}catch (Exception e){
+        try{
+
+        }catch (Exception e){
             e.printStackTrace();
         }
         return CafeUtils.getResponseEntity(CafeConstant.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
