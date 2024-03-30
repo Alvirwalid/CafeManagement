@@ -56,7 +56,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/changepssword")
+    @PostMapping("/changePassword")
     public  ResponseEntity<BaseResponse>changePassword(@RequestBody Map<String,String>requestMap){
 
         return  service.changePassword(requestMap);
