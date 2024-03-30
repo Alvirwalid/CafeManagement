@@ -37,9 +37,10 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
             if(jwtFilter.isAdmin()){
            if(validatedProductMap(requestMap,false)){
 
-//               System.out.println("validateProductMap");
                   repo.save(getProductFromMap(requestMap,false));
+
                  return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null, SAVE_MESSAGE,SAVE_MESSAGE_BN),HttpStatus.OK);
+
                 }
                 return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,INVALID_DATA,INVALID_DATA_BN),HttpStatus.BAD_REQUEST);
             }
@@ -182,6 +183,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
 
         if(requestMap.containsKey("name")){
+
             if(requestMap.containsKey("id") && validateId){
                 return  true;
             }else  if(!validateId){
@@ -197,6 +199,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
         Category category=new Category();
 
         Optional <Category>  c= Optional.ofNullable(categoryRepository.getProducById(Integer.parseInt(requestMap.get("categoryId"))));
+
         category.setId(c.get().getId());
         category.setName(c.get().getName());
 
