@@ -194,9 +194,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
             if(requestMap.containsKey("id") && validateId){
                 return  true;
-            }else  if(!validateId){
-                return  true;
-            }
+            }else return !validateId;
         }
         return  false;
     }
