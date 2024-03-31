@@ -106,6 +106,7 @@ public class UserServiceImpl implements UserService {
 
          if(userObj.isPresent()){
 
+
              if(this.bCryptPasswordEncoder.matches(requestMap.get("oldPassword"),userObj.get().getPassword())){
 
                  userObj.get().setPassword(this.bCryptPasswordEncoder.encode(requestMap.get("newPassword")));

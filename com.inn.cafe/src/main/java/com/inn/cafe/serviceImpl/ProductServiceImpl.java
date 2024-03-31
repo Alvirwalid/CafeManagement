@@ -60,7 +60,16 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
 
         try {
-            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllProduct(),"",""),HttpStatus.OK);
+
+
+            if(jwtFilter.isAdmin()){
+                System.out.println("Admin");
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllProductByAdmin(),"",""),HttpStatus.OK);
+            }else {
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(repo.getAllProduct(),"",""),HttpStatus.OK);
+            }
+
+
         }catch (Exception e){
             return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -149,7 +158,6 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 
         try{
             if(jwtFilter.isAdmin()){
-
                 Optional<Products> products=repo.findById(Integer.parseInt(requestMap.get("id")));
                 if(products.isPresent()){
                    repo.updateProductStatus(requestMap.get("status"),Integer.parseInt(requestMap.get("id")));

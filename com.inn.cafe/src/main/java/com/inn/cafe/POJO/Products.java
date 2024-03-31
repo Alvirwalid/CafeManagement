@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 //@NamedQuery(name = "Products.updateProductStatus",query = "update  Products p  set  p.status =:status where p.id=:id")
 @NamedQuery(name = "Products.getAllProduct",query = "select  new  com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from  Products p where  p.status='true'")
+@NamedQuery(name = "Products.getAllProductByAdmin",query = "select  new  com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from  Products p")
 @NamedQuery(name = "Products.getProductById",query = "select  new  com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price,p.status,p.category.id,p.category.name) from  Products p where  p.id=:id")
 @NamedQuery(name = "Products.getProductByCategoryId",query = "select new com.inn.cafe.wrapper.ProductWrapper(p.id,p.name,p.description,p.price) from  Products p where  p.category.id=:id")
 
@@ -33,7 +34,8 @@ public class Products implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_fk",nullable = false)
     Category category;
-    @Column(name = "description")
+    @Column(name = "description",length = 500)
+
     private  String description;
     @Column(name = "price")
     private  Integer price;

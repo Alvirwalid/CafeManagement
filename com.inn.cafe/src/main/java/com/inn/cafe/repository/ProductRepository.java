@@ -15,6 +15,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Products,Integer> {
 
+    List<ProductWrapper> getAllProductByAdmin();
     List<ProductWrapper> getAllProduct();
     String updateQ ="update products p  set p.status=:status   where p.id=:id";
     @Transactional
