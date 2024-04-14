@@ -46,6 +46,9 @@ public class BillServieImpl implements BillService {
     public ResponseEntity<BaseResponse> generateReport(Map<String, String> requestMap) {
 
         try {
+
+
+            System.out.println("try");
             String fileName;
             if(validateRequestMap(requestMap)){
 
@@ -98,6 +101,7 @@ public class BillServieImpl implements BillService {
             return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"Required data not found"),HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
+
             return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -135,6 +139,9 @@ public class BillServieImpl implements BillService {
             byte[] byteArray=new byte[0];
 
             if(!request.containsKey("uuid") && validateRequestMap(request)){
+
+
+                System.out.println("Contain");
                 return new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.BAD_REQUEST);
             }
 
