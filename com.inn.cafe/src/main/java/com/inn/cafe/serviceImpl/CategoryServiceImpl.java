@@ -2,8 +2,11 @@ package com.inn.cafe.serviceImpl;
 
 import com.google.common.base.Strings;
 import com.inn.cafe.POJO.Category;
+import com.inn.cafe.POJO.Products;
+import com.inn.cafe.constant.BaseConstant;
 import com.inn.cafe.jwt.filter.JwtFilter;
 import com.inn.cafe.repository.CategoryRepository;
+import com.inn.cafe.repository.ProductRepository;
 import com.inn.cafe.service.CategoryService;
 import com.inn.cafe.utils.BaseResponse;
 import com.inn.cafe.utils.CafeUtils;
@@ -20,9 +23,9 @@ import java.util.*;
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
+
     CategoryRepository repo;
-    @Autowired
+   ProductRepository productRepository;
     JwtFilter jwtFilter;
 
 
@@ -64,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
                     return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,INVALID_DATA,INVALID_DATA_BN),HttpStatus.BAD_REQUEST);
                 }
             }
-            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UNAUTHORIZE,""),HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,UNAUTHORIZE,""),HttpStatus.UNAUTHORIZED);
         }catch (Exception e){
             return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -105,6 +108,52 @@ public class CategoryServiceImpl implements CategoryService {
        }catch (Exception e){
            return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.OK);
        }
+    }
+
+    @Override
+    public ResponseEntity<BaseResponse> deleteCategory(Integer id) {
+        try {
+
+           if(jwtFilter.isAdmin()){
+               Optional<Category> category = repo.findById(id);
+               if(category.isPresent()){
+
+               List<Products> products= productRepository.getProductByCategory(id);
+
+                   System.out.println(products);
+
+                   if(products.isEmpty() || products ==null){
+//                       System.out.println("There is no product by category");
+                       repo.deleteCategory(id);
+                       return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, BaseConstant.DELETE_MESSAGE_BN,""),HttpStatus.OK);
+                   }else {
+//                       System.out.println("There is  product by category");
+                       productRepository.deleteByCategoryId(id);
+                       repo.deleteCategory(id);
+                       return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, BaseConstant.DELETE_MESSAGE_BN,""),HttpStatus.OK);
+
+                   }
+
+
+
+               }else {
+
+                   return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, ID_DOESNOT_EXIST_BN,""),HttpStatus.BAD_REQUEST);
+
+               }
+
+           }else {
+               return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, BaseConstant.UNAUTHORIZE,""),HttpStatus.UNAUTHORIZED);
+
+           }
+
+        }catch (Exception e){
+
+            return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+
     }
 
 

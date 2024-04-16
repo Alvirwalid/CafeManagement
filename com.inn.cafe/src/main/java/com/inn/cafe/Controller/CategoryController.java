@@ -30,5 +30,13 @@ public class CategoryController {
         return  service.updatecategory(requestMap);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<BaseResponse>delete(@PathVariable Integer id){
+
+
+        System.out.println("Idddddddddddddddddddd "+id);
+        return  service.deleteCategory(id);
+    }
+
 
 }

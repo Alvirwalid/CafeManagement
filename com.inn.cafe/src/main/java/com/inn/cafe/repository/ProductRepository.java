@@ -29,4 +29,17 @@ public interface ProductRepository extends JpaRepository<Products,Integer> {
 
     List<ProductWrapper> getProductByCategoryId(@Param("id") Integer id);
 
+    String categoryProductQ="select p.* from products p where  p.category_fk=%:id%";
+
+    @Modifying
+    @Transactional
+    @Query(value = categoryProductQ,nativeQuery = true)
+    List<Products>getProductByCategory(@Param("id") Integer id);
+
+    String deleteProductByForeignKey="delete from products p where p.category_fk=%:id%";
+    @Modifying
+    @Transactional
+    @Query(value = deleteProductByForeignKey,nativeQuery = true)
+    void deleteByCategoryId(@Param("id") Integer id);
+
 }

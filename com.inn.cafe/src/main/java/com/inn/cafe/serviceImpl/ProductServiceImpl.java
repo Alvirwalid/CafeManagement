@@ -204,7 +204,7 @@ public class ProductServiceImpl implements com.inn.cafe.service.ProductService {
 //        System.out.println("Get Product Map");
         Category category=new Category();
 
-        Optional <Category>  c= Optional.ofNullable(categoryRepository.getProducById(Integer.parseInt(requestMap.get("categoryId"))));
+        Optional <Category>  c= Optional.ofNullable(categoryRepository.getProductById(Integer.parseInt(requestMap.get("categoryId"))));
 
         category.setId(c.get().getId());
         category.setName(c.get().getName());

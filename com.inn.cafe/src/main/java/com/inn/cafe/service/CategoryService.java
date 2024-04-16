@@ -13,4 +13,5 @@ public interface CategoryService extends BaseConstant {
 
 
     ResponseEntity<BaseResponse>updatecategory(@RequestBody Map<String,String>requestMap);
+    ResponseEntity<BaseResponse>deleteCategory(Integer id);
 }

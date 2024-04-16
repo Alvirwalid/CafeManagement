@@ -14,8 +14,6 @@ import java.util.List;
 //@NamedQuery(name = "Category.getAllCategory",query = "select c from  Category c")
 //@NamedQuery(name = "Category.getById",query = "select c from Category c where  c.id=:id")
 @Entity
-@DynamicUpdate
-@DynamicInsert
 @Data
 @Table(name = "category")
 public class Category implements Serializable {
