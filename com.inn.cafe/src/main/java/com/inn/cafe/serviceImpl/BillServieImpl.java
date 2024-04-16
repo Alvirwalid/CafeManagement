@@ -138,30 +138,47 @@ public class BillServieImpl implements BillService {
         try {
             byte[] byteArray=new byte[0];
 
-            if(!request.containsKey("uuid") && validateRequestMap(request)){
+            if(!request.containsKey("uuid")){
 
 
                 System.out.println("Contain");
                 return new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.BAD_REQUEST);
             }
+            if(validateRequestMap(request)){
 
-            String filePath= STORE_LOCATION+"\\"+(String) request.get("uuid")+".pdf";
-            if(cafeUtils.isExistFile(filePath)){
-                System.out.println("isFileExist");
-                request.put("isGenerate","true");
-                ResponseEntity res= generateReport(request);
-                BaseResponse uuid = (BaseResponse) res.getBody();
-                byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
-                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.OK);
+                String filePath= STORE_LOCATION+"\\"+(String) request.get("uuid")+".pdf";
+
+
+                System.out.println(filePath);
+
+
+                if(cafeUtils.isExistFile(filePath)){
+                System.out.println("Already exist");
+//                    request.put("isGenerate","true");
+//                    ResponseEntity res= generateReport(request);
+//                    BaseResponse uuid = (BaseResponse) res.getBody();
+//                    byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
+                    return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"File Already Downloaded",""),HttpStatus.OK);
+                }else {
+                    System.out.println("File not exist");
+                    request.put("isGenerate","true");
+                    ResponseEntity res= generateReport(request);
+//                    System.out.println(res);
+//                    BaseResponse uuid= (BaseResponse) res.getBody();
+//                    System.out.println("uuid : "+uuid.getData().toString().substring(9,26));
+//                    byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
+                    return new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"Download completed",""),HttpStatus.OK);
+                }
+
             }else {
-                request.put("isGenerate","false");
-                ResponseEntity res= generateReport(request);
-                System.out.println(res);
-                BaseResponse uuid= (BaseResponse) res.getBody();
-                System.out.println("uuid : "+uuid.getData().toString().substring(9,26));
-                byteArray =getByteArray(STORE_LOCATION+"\\"+uuid.getData().toString().substring(9,26)+".pdf");
-                return new ResponseEntity<>(cafeUtils.generateSuccessResponse(byteArray,"",""),HttpStatus.OK);
+
+
+
+                return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,"Required data not found"),HttpStatus.BAD_REQUEST);
+
             }
+
+
         }catch (Exception e){
             return new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.OK);
 

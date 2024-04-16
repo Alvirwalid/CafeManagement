@@ -118,9 +118,6 @@ public class CategoryServiceImpl implements CategoryService {
                if(category.isPresent()){
 
                List<Products> products= productRepository.getProductByCategory(id);
-
-                   System.out.println(products);
-
                    if(products.isEmpty() || products ==null){
 //                       System.out.println("There is no product by category");
                        repo.deleteCategory(id);
@@ -130,15 +127,10 @@ public class CategoryServiceImpl implements CategoryService {
                        productRepository.deleteByCategoryId(id);
                        repo.deleteCategory(id);
                        return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, BaseConstant.DELETE_MESSAGE_BN,""),HttpStatus.OK);
-
                    }
 
-
-
                }else {
-
                    return new  ResponseEntity<>(cafeUtils.generateSuccessResponse(null, ID_DOESNOT_EXIST_BN,""),HttpStatus.BAD_REQUEST);
-
                }
 
            }else {

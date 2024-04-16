@@ -108,10 +108,9 @@ public class AuthService implements BaseConstant {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             User user=repo.findByUsername(request.getUsername()).orElseThrow();
-
             String token=jwtService.generateToken(user.getUsername(),user.getRole().toString());
 
-            System.out.println("User ID : "+user.getId());
+//            System.out.println("User ID : "+user.getId());
 
             List<Token> tokens=  tokenRepository.findAllTokenByUserId(user.getId());
             BaseResponse res=new BaseResponse();
@@ -119,13 +118,20 @@ public class AuthService implements BaseConstant {
             res.setData(new LoginResponse(token,jwtService.extractUsername(token),jwtService.extractRole(token)));
             return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(res,"Successfully login",""),HttpStatus.OK);
         } catch (DisabledException e) {
-//
+            System.out.println("DisabledException");
             return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(null,e.getMessage(),""),HttpStatus.BAD_REQUEST);
         } catch (BadCredentialsException e) {
+            System.out.println("BadCredentialsException");
+
+
             BaseResponse res  = new BaseResponse();
             res.setStatus(false);
-            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(res,e.getMessage(),"Wrong username or password"),HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(cafeUtils.generateSuccessResponse(res,"Wrong username or password",e.getMessage()),HttpStatus.BAD_REQUEST);
+
         }catch (Exception e){
+            System.out.println("Exception");
+
+
             return  new ResponseEntity<>(cafeUtils.generateErrorResponse(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
